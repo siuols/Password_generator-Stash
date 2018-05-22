@@ -1,6 +1,10 @@
 import string
 
+import os
+
 import random
+
+from choices import Option
 
 instruction = """
                  ---------------------------------
@@ -16,20 +20,20 @@ instruction = """
 """
 
 passcom = """
-        Choices :
                 [1] - Uppercase     [2] - Lowercase
                 [3] - Digits        [4] - Punctuation
+
+        Choices :
 
           [a] - 1     [b] - 2     [c] - 3     [d] - 4     [e] - 1,2
           [f] - 1,3   [g] - 1,4   [h] - 2,3   [i] - 2,4   [j] - 3,4
           [k] - 1,2,3 [l] - 2,3,4 [m] - 1,3,4 [n] - 4,2,1 [o] - 1,2,3,4
 """
 
-class PasswordGenerator(object):
-    def __init__(self, password_size, note, choice_input):
+class PasswordGenerator(Option):
+    def __init__(self, password_size, note,):
         self.password_size = password_size
         self.note = note
-        self.choice_input = choice_input
 
     def list(self):
         with open("password.txt", "r") as output:
@@ -46,95 +50,53 @@ class PasswordGenerator(object):
     def random_string_generator(self):
         size = int(password_size)
 
-        a = string.ascii_uppercase
-        b = string.ascii_lowercase
-        c = string.digits
-        d = string.punctuation
+        chars = {
+            "a" : self.uppercase,
+            "b" : self.lowercase,
+            "c" : self.digits,
+            "d" : self.punctuation,
+            "e" : self.comb1,
+            "f" : self.comb2,
+            "g" : self.comb3,
+            "h" : self.comb4,
+            "i" : self.comb5,
+            "j" : self.comb6,
+            "k" : self.comb7,
+            "l" : self.comb8,
+            "m" : self.comb9,
+            "n" : self.comb10,
+            "o" : self.comb11,
+        }
 
-        if choice_input == 'a':
-            chars = a
-            print("Uppercase")
-        elif choice_input == 'b':
-            chars = b
-            print("Lowercase")
-        elif choice_input == 'c':
-            chars = c
-            print("Digits")
-        elif choice_input == 'd':
-            chars = d
-            print("Punctuation")
-        elif choice_input == 'e':
-            chars = a + b
-            print("Uppercase and Lowercase")
-        elif choice_input == 'f':
-            chars = a + c
-            print("Uppercase and Digits")
-        elif choice_input == 'g':
-            chars = a + d
-            print("Uppercase and Punctuation")
-        elif choice_input == 'h':
-            chars = b + c
-            print("Lowercase and Digits")
-        elif choice_input == 'i':
-            chars = b + d
-            print("Lowercase and Punctuation")
-        elif choice_input == 'j':
-            chars = c + d
-            print("Digits, Punctuation")
-        elif choice_input == 'k':
-            chars = a + b + c
-            print("Uppercase, Lowercase, and Digits")
-        elif choice_input == 'l':
-            chars = b + c + d
-            print("Lowercase, Digits, and Punctuation")
-        elif choice_input == 'm':
-            chars = a + c + d
-            print("Uppercase, Digits, and Punctuation")
-        elif choice_input == 'n':
-            chars = a + b + d
-            print("Uppercase, Lowercase, and Punctuation")
-        elif choice_input == 'o':
-            chars = a + b + c + d
-            print("Uppercase, Lowercase, Digits, and Punctuation")
-        else:
-            print("Invalid input")
-
-        password = ''.join(random.choice(chars) for i in range(size))
+        password = ''.join(random.choice(chars[num]()) for i in range(size))
         print("This is your password : {}".format(password))
-        
         self.save(password, note)
 
 if __name__ == "__main__":
-
     password_size = 1
     note = ""
-    choice_input = ""
-
-    password = PasswordGenerator(password_size, note, choice_input)
-
-    a = "0"
-
+    pwd = PasswordGenerator(password_size, note)
+    menu = ""
     print(instruction)
-
-    while a == "0":
+    while menu != "0":
         menu = input("Select: ")
-
         if menu == "1":
             print(passcom)
             try:
-                choice_input = input("Select password combination: ")
+                num = input("Select password combination:")
                 password_size = input("Password size: ")
                 while password_size == "0":
                     print("error")
                     password_size = input("Password size: ")
                 note = input("Note: ")
-                password.random_string_generator()
+                pwd.random_string_generator()
             except ValueError:
                 print("Ti ma ano ka!? ka sayup sa imong gi butang.")
             print(instruction)
         elif menu == "2":
-            password.list()
+            os.system('clear')
+            pwd.list()
             print(instruction)
-        elif menu == "0":
-            break
-            print("Bye")
+            
+    print("Bye")
+    os.system('clear')
